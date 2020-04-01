@@ -1,0 +1,70 @@
+{% extends 'base.html.twig' %}
+
+{% block content %}
+  <h1>List of todos</h1>
+
+  {% if app.session.flashbag.peek('success') is not empty %}
+    {% for message in app.flashes('success') %}
+      <div class="alert alert-success">
+        <p>{{ message }}</p>
+      </div>
+    {% endfor %}
+  {% endif %}
+
+  {% if app.session.flashbag.peek('error') is not empty %}
+    {% for message in app.flashes('error') %}
+      <div class="alert alert-danger">
+        <p>{{ message }}</p>
+      </div>
+    {% endfor %}
+  {% endif %}
+
+  {% if ( todos is empty ) %}
+    <h2>There are no todos at the moment</h2>
+  {% else %}
+    {% for firstAndLastName,userTodos in todos %}
+      <h2>{{ firstAndLastName }}</h2>
+
+      <table>
+        <thead>
+          <tr>
+            <td>Description</td>
+            <td>Contact</td>
+            <td>Medium</td>
+            <td>Duration</td>
+            <td>Priority</td>
+            <td>Date Planed</td>
+            <td>Date Deadline</td>
+            <td>Date Created</td>
+            <td>Completed</td>
+            <td>Configuration</td>
+          </tr>
+        </thead>
+        <tbody>
+          {% for todo in userTodos %}
+            <tr>
+              <td>{{ todo.description }}</td>
+              <td>{{ todo.contact }}</td>
+              <td>{{ todo.medium }}</td>
+              <td>{{ todo.duration }}</td>
+              <td>{{ todo.priority }}</td>
+              <td>{{ todo.DatePlaned ? todo.DatePlaned|date('H:i:s d-m-Y') : '' }}</td>
+              <td>{{ todo.DateDeadline ? todo.DateDeadline|date('H:i:s d-m-Y') : '' }}</td>
+              <td>{{ todo.DateCreated|date('d-m-Y') }}</td>
+              <td>{{ todo.completed ? 'Yes' : 'No' }}</td>
+              <td><a href="/admin/save/{{ todo.id }}">Edit</a></td>
+              <td>
+                <form action="{{ url('destroy') }}" method="POST">
+                  <input type="hidden" value="{{ todo.id }}" name="id"/>
+                  <button>Delete</button>
+                </form>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% endfor %}
+  {% endif %}
+
+  <a href="/admin/save">Add new Todo</a>
+{% endblock %}
